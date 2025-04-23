@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
-import "./CSVProcessor.css";
+import { FiUpload, FiCheck, FiRefreshCw, FiDownload } from "react-icons/fi";
 
 const CSVProcessor = () => {
   const [csvData, setCsvData] = useState(null);
@@ -120,22 +120,32 @@ const CSVProcessor = () => {
   };
 
   return (
-    <div className="csv-processor">
-      <h1 className="title">Generador de Contenido SEO por Localidades</h1>
+    <div className="max-w-4xl mx-auto p-6 mt-8">
+      <h1 className="text-2xl font-semibold text-white text-center mb-8">
+        Generador de Contenido SEO por Localidades
+      </h1>
       
       <div 
-        className={`drag-drop-zone ${isDragging ? 'dragging' : ''}`}
+        className={`border-2 border-dashed rounded-lg p-8 text-center bg-gray-800/80 
+        ${isDragging ? 'border-purple-500 bg-gray-800/50 shadow-lg shadow-purple-500/20' : 'border-gradient-to-r from-gray-600 to-gray-500'} 
+        transition-all duration-200`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="drag-drop-text">
-          📁 Arrastra y suelta tu archivo CSV aquí
+        <div className="text-gray-300 text-lg mb-2 flex items-center justify-center gap-2">
+          <FiUpload className="w-5 h-5 text-purple-400" />
+          Arrastra y suelta tu archivo CSV aquí
         </div>
-        <div className="drag-drop-subtext">
+        <div className="text-gray-500 text-sm mb-4">
           o
         </div>
-        <label htmlFor="csvFileInput" className="file-input-label">
+        <label 
+          htmlFor="csvFileInput" 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-gray-200 rounded-md 
+          hover:from-gray-600 hover:to-gray-500 transition-all duration-200 cursor-pointer shadow-lg shadow-gray-900/50"
+        >
+          <FiUpload className="w-4 h-4 text-purple-400" />
           Seleccionar archivo
         </label>
         <input
@@ -143,35 +153,78 @@ const CSVProcessor = () => {
           type="file"
           accept=".csv"
           onChange={handleFileUpload}
-          style={{ display: "none" }}
+          className="hidden"
         />
       </div>
 
       {csvData && (
-        <div className="status-indicator">
-          ✅ Archivo cargado correctamente
+        <div className="text-green-400 text-center mt-4 flex items-center justify-center gap-2">
+          <FiCheck className="w-5 h-5 text-emerald-400" />
+          Archivo cargado correctamente
         </div>
       )}
 
-      <div className="button-container">
+      <div className="flex justify-center gap-4 mt-6">
         <button 
-          className="button process-button" 
+          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg
+          ${!csvData 
+            ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+            : 'bg-gradient-to-r from-gray-700 to-gray-600 text-white hover:from-gray-600 hover:to-gray-500 shadow-gray-900/50'}`}
+          style={{
+            backgroundClip: 'padding-box',
+            border: '1px solid transparent'
+          }}
           onClick={handleProcessCSV} 
           disabled={!csvData}
         >
-          🔄 Procesar CSV
+          {csvData && (
+            <span 
+              className="absolute inset-0 rounded-md"
+              style={{
+                background: 'linear-gradient(to right, rgb(107, 114, 128), rgb(75, 85, 99))',
+                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                maskComposite: 'exclude',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                padding: '1px'
+              }}
+            />
+          )}
+          <FiRefreshCw className="w-4 h-4 text-purple-400 relative" />
+          <span className="relative">Procesar CSV</span>
         </button>
 
         <button 
-          className="button download-button" 
+          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg
+          ${!processedData 
+            ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+            : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 shadow-purple-900/50'}`}
+          style={{
+            backgroundClip: 'padding-box',
+            border: '1px solid transparent'
+          }}
           onClick={handleDownloadCSV} 
           disabled={!processedData}
         >
-          ⬇️ Descargar CSV Modificado
+          {processedData && (
+            <span 
+              className="absolute inset-0 rounded-md"
+              style={{
+                background: 'linear-gradient(to right, rgb(147, 51, 234), rgb(219, 39, 119))',
+                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                maskComposite: 'exclude',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                padding: '1px'
+              }}
+            />
+          )}
+          <FiDownload className="w-4 h-4 text-purple-200 relative" />
+          <span className="relative">Descargar CSV Modificado</span>
         </button>
       </div>
     </div>
-  );
+);
 };
 
 export default CSVProcessor;
