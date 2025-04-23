@@ -1,0 +1,114 @@
+.csv-processor {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #1a202c;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+}
+
+.title {
+  color: #f7fafc;
+  font-size: 1.8rem;  /* Reduced from 2.5rem */
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;   /* Slightly reduced weight for better balance */
+  letter-spacing: 0.5px;  /* Added for better readability */
+}
+
+.file-upload-container {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: #4a5568;
+  color: #f7fafc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.file-input-label:hover {
+  background: #2d3748;
+  transform: translateY(-2px);
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.button {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.process-button {
+  background: #2d3748;
+  color: #f7fafc;
+  border: 1px solid #4a5568;
+}
+
+.process-button:hover:not(:disabled) {
+  background: #4a5568;
+  transform: translateY(-2px);
+}
+
+.download-button {
+  background: #553c9a;
+  color: #f7fafc;
+  border: 1px solid #6b46c1;
+}
+
+.download-button:hover:not(:disabled) {
+  background: #6b46c1;
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-indicator {
+  margin-top: 1rem;
+  text-align: center;
+  color: #a0aec0;
+}
+
+.drag-drop-zone {
+  border: 2px dashed #4a5568;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  background: #2d3748;
+  transition: all 0.3s ease;
+  margin: 2rem 0;
+}
+
+.drag-drop-zone.dragging {
+  border-color: #553c9a;
+  background: #2d374850;
+}
+
+.drag-drop-text {
+  color: #a0aec0;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.drag-drop-subtext {
+  color: #718096;
+  font-size: 0.9rem;
+}
