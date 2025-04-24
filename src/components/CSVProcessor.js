@@ -126,7 +126,7 @@ const CSVProcessor = () => {
 
   // Añadir en el return, justo después del h1
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-8">
+    <div className="max-w-4xl mx-auto p-6 mt-8" style={{ backgroundColor: '#010409' }}>
       <h1 className="text-2xl font-semibold text-white text-center mb-8">
         Generador de Contenido SEO por Localidades
       </h1>
@@ -140,20 +140,20 @@ const CSVProcessor = () => {
             type="text"
             value={keywordToReplace}
             onChange={(e) => setKeywordToReplace(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-800 text-white rounded-md border border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            className="w-full px-3 py-1.5 bg-gray-800/50 text-gray-400 rounded-md border border-gray-700/50 focus:border-gray-600 focus:ring-0 text-sm"
             placeholder="Ej: Toledo"
           />
         </div>
         
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">
-            Lista de ubicaciones (opcional)
+            Lista de ubicaciones
           </label>
           <label 
             htmlFor="locationsFile"
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-md border border-gray-700 cursor-pointer hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-gray-800/50 text-gray-400 rounded-md border border-gray-700/50 cursor-pointer hover:bg-gray-700/30 transition-colors text-sm"
           >
-            <FiUpload className="w-4 h-4 text-purple-400" />
+            <FiUpload className="w-3 h-3 text-gray-500" />
             Subir archivo TXT
           </label>
           <input
@@ -188,8 +188,8 @@ const CSVProcessor = () => {
         </div>
         <label 
           htmlFor="csvFileInput" 
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-gray-200 rounded-md 
-          hover:from-gray-600 hover:to-gray-500 transition-all duration-200 cursor-pointer shadow-lg shadow-gray-900/50"
+          className="inline-flex items-center px-3 py-1.5 bg-gray-800/50 text-gray-400 rounded-md 
+          hover:bg-gray-700/30 transition-colors cursor-pointer text-sm border border-gray-700/50"
         >
           Seleccionar archivo
         </label>
@@ -211,10 +211,10 @@ const CSVProcessor = () => {
 
       <div className="flex justify-center gap-4 mt-6">
         <button 
-          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg
+          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-200 shadow-lg
           ${!csvData 
-            ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
-            : 'bg-gradient-to-r from-gray-700 to-gray-600 text-white hover:from-gray-600 hover:to-gray-500 shadow-gray-900/50'}`}
+            ? 'bg-gray-800/80 text-gray-400 cursor-not-allowed' 
+            : 'bg-gray-800/90 text-white hover:bg-gray-700/90 shadow-gray-900/50'}`}
           style={{
             backgroundClip: 'padding-box',
             border: '1px solid transparent'
@@ -222,28 +222,15 @@ const CSVProcessor = () => {
           onClick={handleProcessCSV} 
           disabled={!csvData}
         >
-          {csvData && (
-            <span 
-              className="absolute inset-0 rounded-md"
-              style={{
-                background: 'linear-gradient(to right, rgb(107, 114, 128), rgb(75, 85, 99))',
-                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                maskComposite: 'exclude',
-                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                WebkitMaskComposite: 'xor',
-                padding: '1px'
-              }}
-            />
-          )}
           <FiRefreshCw className="w-4 h-4 text-purple-400 relative" />
           <span className="relative">Procesar CSV</span>
         </button>
 
         <button 
-          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg
+          className={`relative inline-flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-200 shadow-lg
           ${!processedData 
-            ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
-            : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 shadow-purple-900/50'}`}
+            ? 'bg-gray-800/80 text-gray-400 cursor-not-allowed' 
+            : 'bg-gray-800/90 text-white hover:bg-gray-700/90 shadow-gray-900/50'}`}
           style={{
             backgroundClip: 'padding-box',
             border: '1px solid transparent'
@@ -251,20 +238,7 @@ const CSVProcessor = () => {
           onClick={handleDownloadCSV} 
           disabled={!processedData}
         >
-          {processedData && (
-            <span 
-              className="absolute inset-0 rounded-md"
-              style={{
-                background: 'linear-gradient(to right, rgb(147, 51, 234), rgb(219, 39, 119))',
-                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                maskComposite: 'exclude',
-                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                WebkitMaskComposite: 'xor',
-                padding: '1px'
-              }}
-            />
-          )}
-          <FiDownload className="w-4 h-4 text-purple-200 relative" />
+          <FiDownload className="w-4 h-4 text-purple-400 relative" />
           <span className="relative">Descargar CSV Modificado</span>
         </button>
       </div>
