@@ -6,94 +6,10 @@ const CSVProcessor = () => {
   const [csvData, setCsvData] = useState(null);
   const [processedData, setProcessedData] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  // Lista de provincias de España
-  const provinciasEspana = [
-    "Almería", "Cádiz", "Córdoba", "Granada", "Huelva", "Jaén", "Málaga", "Sevilla",
-    "Huesca", "Teruel", "Zaragoza", "Asturias", "Baleares", "Las Palmas", "Santa Cruz de Tenerife",
-    "Cantabria", "Ávila", "Burgos", "León", "Palencia", "Salamanca", "Segovia", "Soria", "Valladolid",
-    "Zamora", "Albacete", "Ciudad Real", "Cuenca", "Guadalajara", "Toledo", "Barcelona", "Girona",
-    "Lleida", "Tarragona", "Badajoz", "Cáceres", "A Coruña", "Lugo", "Ourense", "Pontevedra", "Madrid",
-    "Murcia", "Navarra", "La Rioja", "Álava", "Gipuzkoa", "Bizkaia", "Alicante", "Castellón", "Valencia",
-    "Ceuta", "Melilla"
-  ];
-
-  // Función para normalizar texto (eliminar acentos, convertir a minúsculas y reemplazar espacios)
-  const normalizeText = (text) => {
-    return text
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Eliminar acentos
-      .toLowerCase()
-      .replace(/\s+/g, "-"); // Reemplazar espacios por guiones
-  };
-
-  // Procesar el archivo CSV
-  const processCSV = (data) => {
-    const headers = data[0];
-    const rows = data.slice(1);
-
-    // Procesar cada fila
-    const newRows = rows.flatMap((row) => {
-      const originalRow = [...row]; // Mantener la fila original
-      const modifiedRows = provinciasEspana.map((provincia) => {
-        const newRow = row.map((cell) => {
-          if (typeof cell === "string") {
-            return cell.replace("Toledo", provincia);
-          }
-          return cell;
-        });
-
-        // Modificar el Permalink
-        if (newRow[0]) {
-          const provinciaNormalized = normalizeText(provincia);
-          newRow[0] = newRow[0].replace("toledo", provinciaNormalized);
-        }
-
-        return newRow;
-      });
-
-      return [originalRow, ...modifiedRows];
-    });
-
-    return [headers, ...newRows];
-  };
-
-  // Manejar la carga del archivo CSV
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      Papa.parse(file, {
-        header: false,
-        complete: (result) => {
-          setCsvData(result.data);
-        },
-      });
-    }
-  };
-
-  // Procesar y generar el archivo CSV modificado
-  const handleProcessCSV = () => {
-    if (!csvData) return;
-
-    const processedData = processCSV(csvData);
-    setProcessedData(processedData);
-  };
-
-  // Descargar el archivo CSV modificado
-  const handleDownloadCSV = () => {
-    if (!processedData) return;
-
-    const csvContent = Papa.unparse(processedData);
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "contenido_provincias.csv");
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
+  const [keywordToReplace, setKeywordToReplace] = useState('');
+  const [customLocations, setCustomLocations] = useState([]);
+  
+  // Add drag and drop handlers
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -107,23 +23,153 @@ const CSVProcessor = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === "text/csv") {
-      Papa.parse(file, {
-        header: false,
-        complete: (result) => {
-          setCsvData(result.data);
-        },
-      });
+    const files = e.dataTransfer.files;
+    if (files.length) {
+      handleCSVFile(files[0]);
     }
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleCSVFile(file);
+    }
+  };
+
+  const handleCSVFile = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const result = Papa.parse(text, { skipEmptyLines: true });
+      setCsvData(result.data);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleProcessCSV = () => {
+    if (!csvData) return;
+    const processed = processCSV(csvData);
+    setProcessedData(processed);
+  };
+
+  const handleDownloadCSV = () => {
+    if (!processedData) return;
+    const csv = Papa.unparse(processedData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'processed_locations.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Función para normalizar texto (eliminar acentos, convertir a minúsculas y reemplazar espacios)
+  const normalizeText = (text) => {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Eliminar acentos
+      .toLowerCase()
+      .replace(/\s+/g, "-"); // Reemplazar espacios por guiones
+  };
+
+  // Procesar el archivo CSV
+  // Nuevo manejador para el archivo de ubicaciones
+  const handleLocationsFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const locations = e.target.result
+          .split('\n')
+          .map(location => location.trim())
+          .filter(location => location.length > 0);
+        setCustomLocations(locations);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // Modificar processCSV para usar la palabra clave dinámica
+  const processCSV = (data) => {
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    const newRows = rows.flatMap((row) => {
+      const originalRow = [...row];
+      const modifiedRows = customLocations.map((location) => {
+        const newRow = row.map((cell) => {
+          if (typeof cell === "string") {
+            return cell.replace(keywordToReplace, location);
+          }
+          return cell;
+        });
+
+        if (newRow[0]) {
+          const locationNormalized = normalizeText(location);
+          newRow[0] = newRow[0].replace(
+            normalizeText(keywordToReplace), 
+            locationNormalized
+          );
+        }
+
+        return newRow;
+      });
+
+      return [originalRow, ...modifiedRows];
+    });
+
+    return [headers, ...newRows];
+  };
+
+  // Añadir en el return, justo después del h1
   return (
     <div className="max-w-4xl mx-auto p-6 mt-8">
       <h1 className="text-2xl font-semibold text-white text-center mb-8">
         Generador de Contenido SEO por Localidades
       </h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">
+            Palabra clave a reemplazar
+          </label>
+          <input
+            type="text"
+            value={keywordToReplace}
+            onChange={(e) => setKeywordToReplace(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-800 text-white rounded-md border border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            placeholder="Ej: Toledo"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">
+            Lista de ubicaciones (opcional)
+          </label>
+          <label 
+            htmlFor="locationsFile"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-md border border-gray-700 cursor-pointer hover:bg-gray-700 transition-colors"
+          >
+            <FiUpload className="w-4 h-4 text-purple-400" />
+            Subir archivo TXT
+          </label>
+          <input
+            id="locationsFile"
+            type="file"
+            accept=".txt"
+            onChange={handleLocationsFileUpload}
+            className="hidden"
+          />
+          <p className="text-xs text-gray-500">
+            {customLocations.length === 0 
+              ? "No hay ubicaciones cargadas" 
+              : `${customLocations.length} ubicaciones cargadas`}
+          </p>
+        </div>
+      </div>
       
       <div 
         className={`border-2 border-dashed rounded-lg p-8 text-center bg-gray-800/80 
@@ -145,7 +191,6 @@ const CSVProcessor = () => {
           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-gray-200 rounded-md 
           hover:from-gray-600 hover:to-gray-500 transition-all duration-200 cursor-pointer shadow-lg shadow-gray-900/50"
         >
-          <FiUpload className="w-4 h-4 text-purple-400" />
           Seleccionar archivo
         </label>
         <input
